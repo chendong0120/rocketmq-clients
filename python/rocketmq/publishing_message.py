@@ -15,10 +15,10 @@
 
 import socket
 
-from definition import Encoding, EncodingHelper, MessageType, MessageTypeHelper
+from rocketmq.definition import Encoding, EncodingHelper, MessageType, MessageTypeHelper
 from google.protobuf.timestamp_pb2 import Timestamp
-from message import Message
-from message_id_codec import MessageIdCodec
+from rocketmq.message import Message
+from rocketmq.message_id_codec import MessageIdCodec
 from protocol.definition_pb2 import Message as ProtoMessage
 from protocol.definition_pb2 import Resource, SystemProperties
 from rocketmq.log import logger
