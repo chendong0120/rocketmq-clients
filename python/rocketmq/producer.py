@@ -23,7 +23,7 @@ from typing import Set
 from unittest.mock import MagicMock, patch
 
 import rocketmq
-from publishing_message import MessageType
+from rocketmq.publishing_message import MessageType
 from rocketmq.client import Client
 from rocketmq.client_config import ClientConfig
 from rocketmq.definition import PermissionHelper, TopicRouteData
@@ -46,8 +46,8 @@ from rocketmq.rpc_client import Endpoints
 from rocketmq.send_receipt import SendReceipt
 from rocketmq.session_credentials import (SessionCredentials,
                                           SessionCredentialsProvider)
-from status_checker import TooManyRequestsException
-from utils import get_positive_mod
+from rocketmq.status_checker import TooManyRequestsException
+from rocketmq.utils import get_positive_mod
 
 
 class Transaction:
