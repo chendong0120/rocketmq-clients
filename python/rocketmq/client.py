@@ -16,9 +16,9 @@
 import asyncio
 import threading
 
-from protocol import definition_pb2, service_pb2
-from protocol.definition_pb2 import Code as ProtoCode
-from protocol.service_pb2 import HeartbeatRequest, QueryRouteRequest
+from .protocol import definition_pb2, service_pb2
+from .protocol.definition_pb2 import Code as ProtoCode
+from .protocol.service_pb2 import HeartbeatRequest, QueryRouteRequest
 from rocketmq.client_config import ClientConfig
 from rocketmq.client_id_encoder import ClientIdEncoder
 from rocketmq.definition import Resource, TopicRouteData
