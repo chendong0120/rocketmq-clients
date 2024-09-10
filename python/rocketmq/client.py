@@ -120,15 +120,15 @@ class Client:
                     task = await self.client_manager.heartbeat(item, request, self.client_config.request_timeout)
                     code = task.status.code
                     if code == ProtoCode.OK:
-                        logger.info(f"Send heartbeat successfully, endpoints={item}, client_id={self.client_id}")
+                        logger.debug(f"Send heartbeat successfully, endpoints={item}, client_id={self.client_id}")
 
                         if item in self.isolated:
                             self.isolated.pop(item)
-                            logger.info(f"Rejoin endpoints which was isolated before, endpoints={item}, "
+                            logger.debug(f"Rejoin endpoints which was isolated before, endpoints={item}, "
                                         + f"client_id={self.client_id}")
                         return
                     status_message = task.status.message
-                    logger.info(f"Failed to send heartbeat, endpoints={item}, code={code}, "
+                    logger.debug(f"Failed to send heartbeat, endpoints={item}, code={code}, "
                                 + f"status_message={status_message}, client_id={self.client_id}")
                 except Exception:
                     logger.error(f"Failed to send heartbeat, endpoints={item}")
@@ -168,7 +168,7 @@ class Client:
         for endpoints in total_route_endpoints:
             created, session = await self.get_session(endpoints)
             await session.sync_settings(True)
-            logger.info(f"Sync settings to remote, endpoints={endpoints}")
+            logger.debug(f"Sync settings to remote, endpoints={endpoints}")
 
     def stats(self):
         # TODO: stats implement
@@ -209,9 +209,9 @@ class Client:
             created, session = await self.get_session(endpoints)
             if not created:
                 continue
-            logger.info(f"Begin to establish session for endpoints={endpoints}, client_id={self.client_id}")
+            logger.debug(f"Begin to establish session for endpoints={endpoints}, client_id={self.client_id}")
             await session.sync_settings(True)
-            logger.info(f"Establish session for endpoints={endpoints} successfully, client_id={self.client_id}")
+            logger.debug(f"Establish session for endpoints={endpoints} successfully, client_id={self.client_id}")
 
         self.topic_route_cache[topic] = topic_route_data
 
