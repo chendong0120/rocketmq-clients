@@ -21,7 +21,6 @@ from datetime import timedelta
 from threading import Lock
 from typing import Dict
 
-import rocketmq
 from google.protobuf.duration_pb2 import Duration
 from rocketmq.client_config import ClientConfig
 from rocketmq.consumer import Consumer
@@ -42,7 +41,7 @@ from rocketmq.session_credentials import (SessionCredentials,
                                           SessionCredentialsProvider)
 from rocketmq.simple_subscription_settings import SimpleSubscriptionSettings
 from rocketmq.state import State
-from utils import get_positive_mod
+from rocketmq.utils import get_positive_mod,master_broker_id
 
 
 class SubscriptionLoadBalancer:
@@ -60,7 +59,7 @@ class SubscriptionLoadBalancer:
         self._message_queues = [
             mq for mq in topic_route_data.message_queues
             if PermissionHelper().is_readable(mq.permission)
-            and mq.broker.id == rocketmq.utils.master_broker_id
+            and mq.broker.id == master_broker_id
         ]
 
     def update(self, topic_route_data):
@@ -69,7 +68,7 @@ class SubscriptionLoadBalancer:
         self._message_queues = [
             mq for mq in topic_route_data.message_queues
             if PermissionHelper().is_readable(mq.permission)
-            and mq.broker.id == rocketmq.utils.master_broker_id
+            and mq.broker.id == master_broker_id
         ]
         return self
 

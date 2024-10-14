@@ -59,7 +59,10 @@ class Client:
     """
     Main client class which handles interaction with the server.
     """
-    def __init__(self, client_config: ClientConfig):
+    client_type: definition_pb2.ClientType
+    consumer_group: str
+
+    def __init__(self, client_config: ClientConfig, consumer_group: str, client_type: definition_pb2.ClientType):
         """
         Initialization method for the Client class.
 
@@ -80,6 +83,8 @@ class Client:
 
         #: A dictionary to store isolated items.
         self.isolated = dict()
+        self.client_type = client_type
+        self.consumer_group = consumer_group
 
     def get_topics(self):
         raise NotImplementedError("This method should be implemented by the subclass.")
@@ -109,10 +114,11 @@ class Client:
         """
         try:
             endpoints = self.get_total_route_endpoints()
-            request = HeartbeatRequest()
-            request.client_type = definition_pb2.PRODUCER
-            topic = Resource()
-            topic.name = "normal_topic"
+            request = HeartbeatRequest(
+                group=definition_pb2.Resource(name=self.consumer_group),
+                client_type=self.client_type)
+            # topic = Resource()
+            # topic.name = "normal_topic"
             # Collect task into a map.
             for item in endpoints:
                 try:
@@ -124,16 +130,17 @@ class Client:
 
                         if item in self.isolated:
                             self.isolated.pop(item)
-                            logger.debug(f"Rejoin endpoints which was isolated before, endpoints={item}, "
+                            logger.info(f"Rejoin endpoints which was isolated before, endpoints={item}, "
                                         + f"client_id={self.client_id}")
                         return
                     status_message = task.status.message
-                    logger.debug(f"Failed to send heartbeat, endpoints={item}, code={code}, "
+                    logger.warn(f"Failed to send heartbeat, endpoints={item}, code={code}, "
                                 + f"status_message={status_message}, client_id={self.client_id}")
                 except Exception:
                     logger.error(f"Failed to send heartbeat, endpoints={item}")
         except Exception as e:
-            logger.error(f"[Bug] unexpected exception raised during heartbeat, client_id={self.client_id}, Exception: {str(e)}")
+            logger.error(
+                f"[Bug] unexpected exception raised during heartbeat, client_id={self.client_id}, Exception: {str(e)}")
 
     def get_total_route_endpoints(self):
         """

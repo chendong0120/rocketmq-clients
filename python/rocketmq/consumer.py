@@ -16,9 +16,9 @@
 import re
 from typing import List
 
-from filter_expression import ExpressionType
+from rocketmq.filter_expression import ExpressionType
 from google.protobuf.duration_pb2 import Duration
-from message import MessageView
+from rocketmq.message import MessageView
 from rocketmq.client import Client
 from rocketmq.protocol.definition_pb2 import \
     FilterExpression as ProtoFilterExpression
