@@ -38,7 +38,13 @@ def _get_seconds_since_custom_epoch():
 
 class MessageIdCodec:
     __MESSAGE_ID_VERSION_V1 = "01"
-    __PROCESS_FIXED_STRING_V1 = _get_process_fixed_string()
+
+    @property
+    @staticmethod
+    def __PROCESS_FIXED_STRING_V1():
+        # Force initialization to prevent problems in multi-threading
+        return _get_process_fixed_string()
+
     __SECONDS_SINCE_CUSTOM_EPOCH = _get_seconds_since_custom_epoch()
     __SECONDS_START_TIMESTAMP = int(time.time())
 
