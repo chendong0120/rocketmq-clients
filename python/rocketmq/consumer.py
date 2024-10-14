@@ -37,8 +37,8 @@ class ReceiveMessageResult:
 class Consumer(Client):
     CONSUMER_GROUP_REGEX = re.compile(r"^[%a-zA-Z0-9_-]+$")
 
-    def __init__(self, client_config, consumer_group):
-        super().__init__(client_config)
+    def __init__(self, client_config, consumer_group, client_type):
+        super().__init__(client_config, consumer_group, client_type)
         self.consumer_group = consumer_group
 
     async def receive_message(self, request, mq, await_duration):

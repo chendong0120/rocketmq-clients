@@ -29,7 +29,7 @@ from rocketmq.definition import PermissionHelper
 from rocketmq.filter_expression import FilterExpression
 from rocketmq.log import logger
 from rocketmq.message import MessageView
-from rocketmq.protocol.definition_pb2 import Resource
+from rocketmq.protocol.definition_pb2 import Resource, SIMPLE_CONSUMER
 from rocketmq.protocol.definition_pb2 import Resource as ProtoResource
 from rocketmq.protocol.service_pb2 import \
     AckMessageEntry as ProtoAckMessageEntry
@@ -94,7 +94,7 @@ class SimpleConsumer(Consumer):
         :param await_duration: The await duration.
         :param subscription_expressions: The subscription expressions.
         """
-        super().__init__(client_config, consumer_group)
+        super().__init__(client_config, consumer_group, SIMPLE_CONSUMER)
 
         self._consumer_group = consumer_group
         self._await_duration = await_duration
