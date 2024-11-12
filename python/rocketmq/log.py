@@ -16,8 +16,6 @@
 import logging
 import os
 
-# logger = logging.getLogger(__name__)
-
 logger = logging.getLogger("rocketmqlogger")
 # logger.setLevel(logging.DEBUG)
 #
