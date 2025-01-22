@@ -37,10 +37,12 @@ class RpcClient:
     _io_loop_thread = None  # thread for io loop
     RPC_CLIENT_MAX_IDLE_SECONDS = 60 * 30
 
-    def __init__(self, tls_enable=False):
+    def __init__(self, tls_enable=False, io_loop=None):
         with RpcClient._instance_lock:
             # start an event loop for async io
-            if RpcClient._io_loop is None:
+            if io_loop is None and RpcClient._io_loop is None:
+               RpcClient._io_loop = io_loop
+            elif RpcClient._io_loop is None:
                 initialized_event = threading.Event()
                 RpcClient._io_loop_thread = threading.Thread(target=RpcClient.__init_io_loop, args=(initialized_event,),
                                                              name="channel_io_loop_thread")
