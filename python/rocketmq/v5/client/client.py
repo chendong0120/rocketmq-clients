@@ -36,7 +36,7 @@ class Client:
 
     CALLBACK_THREADS_NUM = 5
 
-    def __init__(self, client_configuration, topics, client_type: ClientType, tls_enable=False):
+    def __init__(self, client_configuration, topics, client_type: ClientType, tls_enable=False, io_loop=None):
         if client_configuration is None:
             raise IllegalArgumentException("clientConfiguration should not be null.")
         self.__client_configuration = client_configuration
@@ -44,7 +44,7 @@ class Client:
         self.__client_id = ClientId().client_id
         # {topic, topicRouteData}
         self.__topic_route_cache = ConcurrentMap()
-        self.__rpc_client = RpcClient(tls_enable)
+        self.__rpc_client = RpcClient(tls_enable, io_loop)
         self.__client_metrics = ClientMetrics(self.__client_id, client_configuration)
         self.__topic_route_scheduler = None
         self.__heartbeat_scheduler = None
