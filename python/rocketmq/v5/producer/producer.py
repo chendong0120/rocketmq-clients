@@ -109,8 +109,8 @@ class TransactionChecker(metaclass=abc.ABCMeta):
 class Producer(Client):
     MAX_SEND_ATTEMPTS = 3  # max retry times when send failed
 
-    def __init__(self, client_configuration, topics=None, checker=None, tls_enable=False):
-        super().__init__(client_configuration, topics, ClientType.PRODUCER, tls_enable)
+    def __init__(self, client_configuration, topics=None, checker=None, tls_enable=False, io_loop=None):
+        super().__init__(client_configuration, topics, ClientType.PRODUCER, tls_enable, io_loop)
         # {topic, QueueSelector}
         self.__send_queue_selectors = ConcurrentMap()
         self.__checker = checker  # checker for transaction message, handle checking from server
