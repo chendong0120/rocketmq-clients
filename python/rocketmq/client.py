@@ -16,9 +16,6 @@
 import asyncio
 import threading
 
-from .protocol import definition_pb2, service_pb2
-from .protocol.definition_pb2 import Code as ProtoCode
-from .protocol.service_pb2 import HeartbeatRequest, QueryRouteRequest
 from rocketmq.client_config import ClientConfig
 from rocketmq.client_id_encoder import ClientIdEncoder
 from rocketmq.definition import Resource, TopicRouteData
@@ -26,6 +23,10 @@ from rocketmq.log import logger
 from rocketmq.rpc_client import Endpoints, RpcClient
 from rocketmq.session import Session
 from rocketmq.signature import Signature
+
+from .protocol import definition_pb2, service_pb2
+from .protocol.definition_pb2 import Code as ProtoCode
+from .protocol.service_pb2 import HeartbeatRequest, QueryRouteRequest
 
 
 class ScheduleWithFixedDelay:
@@ -88,6 +89,11 @@ class Client:
 
     def get_topics(self):
         raise NotImplementedError("This method should be implemented by the subclass.")
+    
+    async def init_topic_route(self):
+        for topic in self.get_topics():
+            self.topic_route_cache[topic] = await self.fetch_topic_route(topic)
+        self.sessions_table = {}
 
     async def start(self):
         """
@@ -95,8 +101,7 @@ class Client:
         """
         # get topic route
         logger.debug(f"Begin to start the rocketmq client, client_id={self.client_id}")
-        for topic in self.get_topics():
-            self.topic_route_cache[topic] = await self.fetch_topic_route(topic)
+        await self.init_topic_route()
         scheduler = ScheduleWithFixedDelay(self.heartbeat, 3, 12)
         scheduler_sync_settings = ScheduleWithFixedDelay(self.sync_settings, 3, 12)
         scheduler.schedule()
@@ -132,6 +137,9 @@ class Client:
                             self.isolated.pop(item)
                             logger.info(f"Rejoin endpoints which was isolated before, endpoints={item}, "
                                         + f"client_id={self.client_id}")
+                        return
+                    elif code == ProtoCode.UNRECOGNIZED_CLIENT_TYPE:
+                        await self.init_topic_route()
                         return
                     status_message = task.status.message
                     logger.warn(f"Failed to send heartbeat, endpoints={item}, code={code}, "
@@ -175,6 +183,7 @@ class Client:
         for endpoints in total_route_endpoints:
             created, session = await self.get_session(endpoints)
             await session.sync_settings(True)
+            self.sessions_table[endpoints] = session
             logger.debug(f"Sync settings to remote, endpoints={endpoints}")
 
     def stats(self):
@@ -263,14 +272,6 @@ class Client:
 
         :param endpoints: The endpoints to get the session for.
         """
-        self.sessionsLock.acquire()
-        try:
-            # Session exists, return in advance.
-            if endpoints in self.sessions_table:
-                return (False, self.sessions_table[endpoints])
-        finally:
-            self.sessionsLock.release()
-
         self.sessionsLock.acquire()
         try:
             # Session exists, return in advance.
