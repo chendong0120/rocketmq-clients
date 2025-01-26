@@ -64,7 +64,7 @@ class Session:
     def on_error(self, exception):
         client_id = self._client.get_client_id()
         logger.error("Caught InvalidStateError: RPC already finished.")
-        logger.error(f"Exception raised from stream, clientId={client_id}, endpoints={self._endpoints}", exception)
+        logger.exception(f"Exception raised from stream, clientId={client_id}, endpoints={self._endpoints}, exception=%s", exception)
         max_retry = 3
         for i in range(max_retry):
             try:
